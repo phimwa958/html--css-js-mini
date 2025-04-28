@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Drawing App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 120px;
+            cursor: pointer;
+        }
+
+        canvas {
+            width: 100%;
+            height: 500px;
+            background-color: white;
+            border: 1px solid #ccc;
+            touch-action: none;
+        }
+
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <input type="color" id="color" aria-label="เลือกสี">
+            <input type="range" id="brushSize" min="1" max="50" value="5" aria-label="ปรับขนาดแปรง">
+            <button id="clear" aria-label="ล้างภาพ">ล้าง</button>
+            <button id="download" aria-label="ดาวน์โหลด">ดาวน์โหลด</button>
+        </div>
+        <canvas id="canvas" aria-label="พื้นที่วาดรูป"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('color');
+        const brushSize = document.getElementById('brushSize');
+        const clearBtn = document.getElementById('clear');
+        const downloadBtn = document.getElementById('download');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        // ตั้งค่าขนาด Canvas
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            const width = parent.clientWidth;
+            const height = 500;
+            const ratio = window.devicePixelRatio || 1;
+
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            ctx.scale(ratio, ratio);
+        }
+        resizeCanvas();
+
+        // ตั้งค่าเริ่มต้น
+        ctx.strokeStyle = colorPicker.value;
+        ctx.lineWidth = brushSize.value;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        // ฟังก์ชันวาดรูป
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = getEventPosition(e);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const [x, y] = getEventPosition(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            [lastX, lastY] = [x, y];
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function getEventPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return [
+                clientX - rect.left,
+                clientY - rect.top
+            ];
+        }
+
+        // Event Listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrawing(e.touches[0]);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            draw(e.touches[0]);
+        });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        // ปรับแต่งแปรง
+        colorPicker.addEventListener('input', (e) => {
+            ctx.strokeStyle = e.target.value;
+        });
+
+        brushSize.addEventListener('input', (e) => {
+            ctx.lineWidth = e.target.value;
+        });
+
+        // ล้าง Canvas
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        // ดาวน์โหลดภาพ
+        downloadBtn.addEventListener('click', () => {
+            const dataUrl = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'my-drawing.png';
+            a.click();
+        });
+    </script>
+</body>
+</html>
