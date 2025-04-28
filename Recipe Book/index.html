@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมุดสูตรอาหาร</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #219a52;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            padding: 5px 15px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .recipe-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .category-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .category-options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .recipe-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .recipe-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .edit-btn { background: #f1c40f; }
+        .delete-btn { background: #e74c3c; }
+        .cancel-btn { background: #95a5a6; }
+
+        @media (max-width: 768px) {
+            .recipe-list {
+                grid-template-columns: 1fr;
+            }
+            .header-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-buttons">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="ค้นหาด้วยชื่อ, วัตถุดิบ หรือหมวดหมู่...">
+                <button type="button" id="clearButton">ล้าง</button>
+            </div>
+            <button id="addRecipeButton">➕ เพิ่มสูตรอาหาร</button>
+        </div>
+
+        <div class="category-filter" id="categoryFilter">
+            <button class="category-btn active" data-category="">ทั้งหมด</button>
+            <button class="category-btn" data-category="ไทย">ไทย</button>
+            <button class="category-btn" data-category="ตะวันตก">ตะวันตก</button>
+            <button class="category-btn" data-category="ของหวาน">ของหวาน</button>
+            <button class="category-btn" data-category="อาหารเจ">อาหารเจ</button>
+        </div>
+
+        <div class="recipe-form">
+            <form id="recipeForm">
+                <input type="hidden" id="recipeId">
+                <div class="form-group">
+                    <label>ชื่อสูตรอาหาร</label>
+                    <input type="text" id="recipeName" required>
+                </div>
+                <div class="form-group">
+                    <label>วัตถุดิบ (ใส่แต่ละบรรทัด)</label>
+                    <textarea id="ingredients" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>ขั้นตอนการทำ (ใส่แต่ละบรรทัด)</label>
+                    <textarea id="steps" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>เวลาทำอาหาร (นาที)</label>
+                    <input type="number" id="cookingTime" required>
+                </div>
+                <div class="form-group">
+                    <label>ระดับความยาก</label>
+                    <select id="difficulty" required>
+                        <option value="ง่าย">ง่าย</option>
+                        <option value="ปานกลาง">ปานกลาง</option>
+                        <option value="ยาก">ยาก</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>หมวดหมู่</label>
+                    <div class="category-options">
+                        <label><input type="checkbox" name="category" value="ไทย"> ไทย</label>
+                        <label><input type="checkbox" name="category" value="ตะวันตก"> ตะวันตก</label>
+                        <label><input type="checkbox" name="category" value="ของหวาน"> ของหวาน</label>
+                        <label><input type="checkbox" name="category" value="อาหารเจ"> อาหารเจ</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit">บันทึกสูตรอาหาร</button>
+                    <button type="button" class="cancel-btn" onclick="cancelForm()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="recipe-list" id="recipeList"></div>
+    </div>
+
+<script>
+    let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+    let editingId = null;
+    let searchTerm = '';
+    let selectedCategory = '';
+
+    function init() {
+        recipes = recipes.map(recipe => ({
+            ...recipe,
+            cookingTime: recipe.cookingTime || 0,
+            difficulty: recipe.difficulty || 'ง่าย',
+            categories: recipe.categories || []
+        }));
+        localStorage.setItem('recipes', JSON.stringify(recipes));
+        renderRecipes();
+    }
+
+    function toggleForm(show = true) {
+        document.querySelector('.recipe-form').style.display = show ? 'block' : 'none';
+    }
+
+    function cancelForm() {
+        toggleForm(false);
+        document.getElementById('recipeForm').reset();
+        editingId = null;
+    }
+
+    function saveRecipe(e) {
+        e.preventDefault();
+
+        const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
+        const categories = Array.from(categoryCheckboxes).map(c => c.value);
+
+        const recipe = {
+            id: editingId || Date.now(),
+            name: document.getElementById('recipeName').value,
+            ingredients: document.getElementById('ingredients').value.split('\n').map(line => line.trim()),
+            steps: document.getElementById('steps').value.split('\n').map(line => line.trim()),
+            cookingTime: parseInt(document.getElementById('cookingTime').value),
+            difficulty: document.getElementById('difficulty').value,
+            categories: categories
+        };
+
+        if (editingId) {
+            const index = recipes.findIndex(r => r.id === editingId);
+            recipes[index] = recipe;
+        } else {
+            recipes.push(recipe);
+        }
+
+        localStorage.setItem('recipes', JSON.stringify(recipes));
+        toggleForm(false);
+        renderRecipes();
+        document.getElementById('recipeForm').reset();
+        editingId = null;
+    }
+
+    function editRecipe(id) {
+        const recipe = recipes.find(r => r.id === id);
+        editingId = id;
+        
+        document.getElementById('recipeName').value = recipe.name;
+        document.getElementById('ingredients').value = recipe.ingredients.join('\n');
+        document.getElementById('steps').value = recipe.steps.join('\n');
+        document.getElementById('cookingTime').value = recipe.cookingTime;
+        document.getElementById('difficulty').value = recipe.difficulty;
+
+        document.querySelectorAll('input[name="category"]').forEach(checkbox => {
+            checkbox.checked = recipe.categories.includes(checkbox.value);
+        });
+        
+        toggleForm(true);
+    }
+
+    function deleteRecipe(id) {
+        if (confirm('คุณแน่ใจที่จะลบสูตรอาหารนี้ใช่หรือไม่?')) {
+            recipes = recipes.filter(r => r.id !== id);
+            localStorage.setItem('recipes', JSON.stringify(recipes));
+            renderRecipes();
+        }
+    }
+
+    function filterRecipes() {
+        return recipes.filter(recipe => {
+            const matchesSearch = recipe.name.toLowerCase().includes(searchTerm) ||
+                recipe.ingredients.some(ing => ing.toLowerCase().includes(searchTerm)) ||
+                recipe.steps.some(step => step.toLowerCase().includes(searchTerm)) ||
+                recipe.categories.some(cat => cat.toLowerCase().includes(searchTerm));
+
+            const matchesCategory = !selectedCategory || recipe.categories.includes(selectedCategory);
+
+            return matchesSearch && matchesCategory;
+        });
+    }
+
+    function renderRecipes() {
+        const filteredRecipes = filterRecipes();
+        const recipeList = document.getElementById('recipeList');
+        recipeList.innerHTML = filteredRecipes.map(recipe => `
+            <div class="recipe-card">
+                <div class="actions">
+                    <button class="edit-btn" onclick="editRecipe(${recipe.id})">แก้ไข</button>
+                    <button class="delete-btn" onclick="deleteRecipe(${recipe.id})">ลบ</button>
+                </div>
+                <h3 class="recipe-title">${recipe.name}</h3>
+                <div class="recipe-meta">
+                    <span>⏱ ${recipe.cookingTime} นาที</span>
+                    <span>📌 ${recipe.difficulty}</span>
+                </div>
+                <div class="recipe-categories">
+                    ${recipe.categories.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
+                </div>
+                <h4>วัตถุดิบ:</h4>
+                <ul class="ingredient-list">
+                    ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                </ul>
+                <h4>ขั้นตอนการทำ:</h4>
+                <ol class="step-list">
+                    ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+            </div>
+        `).join('');
+    }
+
+    // Event Listeners
+    document.getElementById('addRecipeButton').addEventListener('click', () => {
+        document.getElementById('recipeForm').reset();
+        editingId = null;
+        toggleForm(true);
+    });
+
+    document.getElementById('recipeForm').addEventListener('submit', saveRecipe);
+
+    document.getElementById('clearButton').addEventListener('click', () => {
+        searchTerm = '';
+        selectedCategory = '';
+        document.getElementById('searchInput').value = '';
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-category=""]').classList.add('active');
+        renderRecipes();
+    });
+    
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchTerm = e.target.value.toLowerCase();
+        renderRecipes();
+    });
+    
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectedCategory = this.dataset.category === selectedCategory ? '' : this.dataset.category;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            this.classList.toggle('active', selectedCategory !== '');
+            if (!selectedCategory) document.querySelector('[data-category=""]').classList.add('active');
+            renderRecipes();
+        });
+    });
+    
+    // Initialize App
+    init();
+</script>
+</body>
+</html>
