@@ -1,0 +1,170 @@
+:root {
+    --primary-color: #4a6bff;
+    --secondary-color: #f5f5f5;
+    --text-color: #333;
+    --border-color: #ddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    padding: 30px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+}
+
+.converter-box {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 15px;
+    align-items: end;
+}
+
+.amount-box, .from-box, .to-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.amount-box {
+    grid-column: 1 / -1;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+input, select {
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+input {
+    width: 100%;
+}
+
+select {
+    cursor: pointer;
+    background-color: white;
+}
+
+.swap-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+#swap {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s, background 0.3s;
+}
+
+#swap:hover {
+    background: #3a5bef;
+    transform: rotate(180deg);
+}
+
+.result-box {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 15px;
+}
+
+#result {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+#rate-info {
+    color: #666;
+    font-size: 14px;
+}
+
+.last-updated {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 13px;
+    color: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .converter-box {
+        grid-template-columns: 1fr;
+    }
+    
+    .swap-btn {
+        padding: 10px 0;
+    }
+    
+    #swap {
+        transform: rotate(90deg);
+    }
+    
+    #swap:hover {
+        transform: rotate(270deg);
+    }
+    
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+    
+    #result {
+        font-size: 20px;
+    }
+    
+    #rate-info {
+        font-size: 13px;
+    }
+}
