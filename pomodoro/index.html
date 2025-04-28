@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #ffebeb;
+            font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .timer {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(255, 105, 105, 0.3);
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .progress-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle {
+            transition: 0.35s stroke-dashoffset;
+            transform-origin: 50% 50%;
+        }
+
+        .time-display {
+            font-size: 48px;
+            color: #ff6969;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 25px;
+            background: #ff6969;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s all;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 105, 105, 0.5);
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="timer">
+            <svg class="progress-ring">
+                <circle class="progress-ring__circle" 
+                        stroke="#ffe3e3" 
+                        stroke-width="8" 
+                        fill="transparent" 
+                        r="145" 
+                        cx="150" 
+                        cy="150"/>
+            </svg>
+            <div class="time-display">25:00</div>
+        </div>
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+        <audio id="alarm" src="https://assets.mixkit.co/active_storage/sfx/2868/2868-preview.mp3"></audio>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const timeDisplay = document.querySelector('.time-display');
+        const circle = document.querySelector('.progress-ring__circle');
+        const alarm = document.getElementById('alarm');
+        
+        let timer = null;
+        let isRunning = false;
+        let timeLeft = 25 * 60;
+        const radius = circle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = circumference;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            setProgress((timeLeft / (25 * 60)) * 100);
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.textContent = 'Pause';
+                timer = setInterval(() => {
+                    timeLeft--;
+                    updateDisplay();
+                    if (timeLeft === 0) {
+                        clearInterval(timer);
+                        alarm.play();
+                        setTimeout(() => alert('Time is up!'), 100);
+                        resetTimer();
+                    }
+                }, 1000);
+            } else {
+                isRunning = false;
+                startBtn.textContent = 'Start';
+                clearInterval(timer);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            timeLeft = 25 * 60;
+            startBtn.textContent = 'Start';
+            updateDisplay();
+        }
+
+        startBtn.addEventListener('click', startTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+        // Initial setup
+        updateDisplay();
+    </script>
+</body>
+</html>
