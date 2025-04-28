@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โครงการสร้างสรรค์โดยตัวฉันเอง</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f6fa 0%, #dcdde1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            animation: fadeIn 1s ease-in;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 โปรเจคต์ง่ายๆพัฒนาโดยฉันเองง!</h1>
+            <p>พบกับเครื่องมือสารพัดประโยชน์ที่จะทำให้ชีวิตคุณง่ายขึ้น!</p>
+        </header>
+
+        <div class="grid">
+            <!-- Task Manager -->
+            <div class="card" onclick="window.location.href='Task Manager Mini/index.html'">
+                <h2>📋 จัดการงาน</h2>
+                <p>เพิ่มประสิทธิภาพการทำงานด้วยตัวช่วยจัดการงาน  ติดตามความคืบหน้าได้แบบเรียลไทม์!</p>
+                <a class="btn">เริ่มจัดการงาน</a>
+            </div>
+
+            <!-- Recipe Book -->
+            <div class="card" onclick="window.location.href='Recipe Book/index.html'">
+                <h2>🍳 บันทึกสูตรอาหารของคุณเอง</h2>
+                <p>บันทึกสูตรอาหารเด็ดของคุณ ค้นหาง่ายด้วยระบบค้นหาอัจฉริยะ พร้อมระบบแก้ไข และลบสูตร!</p>
+                <a class="btn">เปิดสมุดสูตร</a>
+            </div>
+
+            <!-- Expense Tracker -->
+            <div class="card" onclick="window.location.href='Expense Tracker/index.html'">
+                <h2>💵 จัดการเงินแบบแม่นยำ</h2>
+                <p>บันทึกรายรับรายจ่ายทุกบาททุกสตางค์ของคุณ!</p>
+                <a class="btn">ตรวจสอบเงิน</a>
+            </div>
+
+            <!-- Currency Converter -->
+            <div class="card" onclick="window.location.href='Currency_Converter_Web_Application/index.html'">
+                <h2>💱 คำนวณอัตราแลกเปลี่ยน</h2>
+                <p>อัพเดทอัตราแลกเปลี่ยนล่าสุดแบบเรียลไทม์ คำนวณค่าเงินได้มากกว่า 50 สกุลทั่วโลก!</p>
+                <a class="btn">แปลงเงินทันที</a>
+            </div>
+
+            <!-- Quiz App -->
+            <div class="card" onclick="window.location.href='Quiz App/index.html'">
+                <h2>🧠 ทดสอบความรู้สุดท้าทาย</h2>
+                <p>สนุกกับแบบทดสอบความรู้ พร้อมระบบวัดคะแนน!</p>
+                <a class="btn">เริ่มทดสอบ</a>
+            </div>
+
+            <!-- BMI Calculator -->
+            <div class="card" onclick="window.location.href='bmi/index.html'">
+                <h2>⚖️ คำนวณดัชนีมวลกาย</h2>
+                <p>ตรวจสอบสุขภาพร่างกายด้วยเครื่องคำนวณ BMI แม่นยำ พร้อมคำแนะนำการดูแลสุขภาพส่วนตัว!</p>
+                <a class="btn">คำนวณตอนนี้</a>
+            </div>
+
+            <!-- Pomodoro -->
+            <div class="card" onclick="window.location.href='pomodoro/index.html'">
+                <h2>⏰ เทคนิคโพโมโดโร</h2>
+                <p>เพิ่มประสิทธิภาพการทำงานด้วยเทคนิคการจัดการเวลาแบบมืออาชีพ!</p>
+                <a class="btn">เริ่มจับเวลา</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add hover effect
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const x = e.pageX - card.offsetLeft;
+                const y = e.pageY - card.offsetTop;
+
+                card.style.transform = `
+                    perspective(1000px)
+                    rotateX(${(y - card.offsetHeight/2) / 15}deg)
+                    rotateY(${-(x - card.offsetWidth/2) / 15}deg)
+                    translateY(-10px)
+                `;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(-10px)';
+            });
+        });
+    </script>
+</body>
+</html>
