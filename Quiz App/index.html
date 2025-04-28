@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบออนไลน์</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .question-number {
+            color: #0984e3;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #2d3436;
+        }
+
+        .options-container {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background: #f8f9fa;
+        }
+
+        .option.selected {
+            border-color: #0984e3;
+            background: #e3f2fd;
+        }
+
+        .option.correct {
+            border-color: #00b894;
+            background: #e8f6f3;
+        }
+
+        .option.incorrect {
+            border-color: #ff7675;
+            background: #ffebee;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #0984e3;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0873c4;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .score {
+            font-size: 2rem;
+            color: #00b894;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+                padding: 15px;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="question-number" id="questionNumber"></div>
+        <div class="question-text" id="questionText"></div>
+        <div class="options-container" id="optionsContainer"></div>
+        <div class="controls">
+            <div id="progress"></div>
+            <button onclick="nextQuestion()" id="nextButton" style="display: none;">ต่อไป</button>
+        </div>
+    </div>
+
+    <div class="result-container" id="resultContainer" style="display: none;">
+        <h2>ผลลัพธ์</h2>
+        <div class="score" id="score"></div>
+        <button onclick="restartQuiz()">ทำแบบทดสอบอีกครั้ง</button>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        const questions = [
+            {
+                question: "ข้อใดคือชื่อเต็มของ HTML?",
+                options: [
+                    "Hyper Text Markup Language",
+                    "High Tech Modern Language",
+                    "Hyperlink and Text Markup Language"
+                ],
+                correct: 0
+            },
+            {
+                question: "CSS ย่อมาจากอะไร?",
+                options: [
+                    "Cascading Style Sheets",
+                    "Computer Style Sheets",
+                    "Creative Style System"
+                ],
+                correct: 0
+            },
+            {
+                question: "JavaScript ทำงานฝั่งใด?",
+                options: [
+                    "Server-side",
+                    "Client-side",
+                    "ทั้งสองฝั่ง"
+                ],
+                correct: 2
+            }
+        ];
+
+        function initializeQuiz() {
+            showQuestion();
+            updateProgress();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `ข้อที่ ${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectOption(optionElement, index);
+                optionsContainer.appendChild(optionElement);
+            });
+
+            document.getElementById('nextButton').style.display = 'none';
+        }
+
+        function selectOption(optionElement, index) {
+            if (selectedOption !== null) {
+                selectedOption.classList.remove('selected');
+            }
+            
+            selectedOption = optionElement;
+            selectedOption.classList.add('selected');
+            document.getElementById('nextButton').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            checkAnswer();
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+                updateProgress();
+                selectedOption = null;
+            } else {
+                showResult();
+            }
+        }
+
+        function checkAnswer() {
+            const correctIndex = questions[currentQuestion].correct;
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach((option, index) => {
+                if (index === correctIndex) {
+                    option.classList.add('correct');
+                } else if (option.classList.contains('selected') && index !== correctIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            if (selectedOption && selectedOption === options[correctIndex]) {
+                score++;
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').textContent = 
+                `ความคืบหน้า: ${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function showResult() {
+            document.querySelector('.quiz-container').style.display = 'none';
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('score').textContent = `คะแนน: ${score}/${questions.length}`;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedOption = null;
+            document.querySelector('.quiz-container').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            initializeQuiz();
+        }
+
+        // เริ่มต้นแบบทดสอบ
+        initializeQuiz();
+    </script>
+</body>
+</html>
